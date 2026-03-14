@@ -1,0 +1,75 @@
+{
+  "_comment": "Line + Clustered Column Combo — Columns for values, line for trend",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "v05Combo",
+  "position": {
+    "x": 30,
+    "y": 250,
+    "z": 2000,
+    "width": 600,
+    "height": 400,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "lineClusteredColumnComboChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TABLE_NAME"
+                    }
+                  },
+                  "Property": "COLUMN_NAME"
+                }
+              },
+              "queryRef": "TABLE_NAME.COLUMN_NAME",
+              "nativeQueryRef": "COLUMN_NAME"
+            }
+          ]
+        },
+        "ColumnY": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MEASURES_TABLE"
+                    }
+                  },
+                  "Property": "MEASURE_VALUE"
+                }
+              },
+              "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
+              "nativeQueryRef": "MEASURE_VALUE"
+            }
+          ]
+        },
+        "LineY": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MEASURES_TABLE"
+                    }
+                  },
+                  "Property": "MEASURE_VALUE_3"
+                }
+              },
+              "queryRef": "MEASURES_TABLE.MEASURE_VALUE_3",
+              "nativeQueryRef": "MEASURE_VALUE_3"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

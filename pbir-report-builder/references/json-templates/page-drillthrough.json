@@ -1,0 +1,10 @@
+{
+  "_comment": "Drillthrough page — set type to Drillthrough",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "pg03Drillthrough",
+  "displayName": "Product Detail",
+  "displayOption": "FitToPage",
+  "width": 1280,
+  "height": 720,
+  "type": "Drillthrough"
+}

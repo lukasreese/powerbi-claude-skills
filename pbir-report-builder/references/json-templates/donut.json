@@ -1,0 +1,57 @@
+{
+  "_comment": "Donut Chart — Category (slices) and Y (value)",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "v09Donut",
+  "position": {
+    "x": 650,
+    "y": 250,
+    "z": 2001,
+    "width": 350,
+    "height": 350,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TABLE_NAME"
+                    }
+                  },
+                  "Property": "COLUMN_NAME"
+                }
+              },
+              "queryRef": "TABLE_NAME.COLUMN_NAME",
+              "nativeQueryRef": "COLUMN_NAME"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MEASURES_TABLE"
+                    }
+                  },
+                  "Property": "MEASURE_VALUE"
+                }
+              },
+              "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
+              "nativeQueryRef": "MEASURE_VALUE"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "_comment": "Slicer — Single field in Values role",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "v08Slicer",
+  "position": {
+    "x": 30,
+    "y": 30,
+    "z": 500,
+    "width": 200,
+    "height": 50,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TABLE_NAME"
+                    }
+                  },
+                  "Property": "COLUMN_NAME"
+                }
+              },
+              "queryRef": "TABLE_NAME.COLUMN_NAME",
+              "nativeQueryRef": "COLUMN_NAME"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
