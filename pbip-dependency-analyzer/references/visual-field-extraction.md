@@ -9,9 +9,11 @@ All field references follow a common structure. Extract the **table name** (Enti
 **Measure reference:**
 ```json
 {
-  "Measure": {
-    "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } },
-    "Property": "MEASURE_NAME"
+  "field": {
+    "Measure": {
+      "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } },
+      "Property": "MEASURE_NAME"
+    }
   }
 }
 ```
@@ -19,9 +21,11 @@ All field references follow a common structure. Extract the **table name** (Enti
 **Column reference:**
 ```json
 {
-  "Column": {
-    "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } },
-    "Property": "COLUMN_NAME"
+  "field": {
+    "Column": {
+      "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } },
+      "Property": "COLUMN_NAME"
+    }
   }
 }
 ```
