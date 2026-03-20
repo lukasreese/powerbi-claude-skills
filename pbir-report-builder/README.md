@@ -49,7 +49,7 @@ references/
   json-schemas/            7 Microsoft PBIR schemas for validation
 
   ibcs-visuals/            IBCS variance chart system
-    SKILL.md               Full IBCS workflow and template selection guide
+    IBCS-SKILL.md          Full IBCS workflow and template selection guide
     references/
       ibcs-colors.md       IBCS color palette (dark blue, gray, green, red)
       ibcs-dax-measures.md DAX measure templates for variance calculations
@@ -64,14 +64,13 @@ references/
 
 ### Step 1: Install the skill
 
-```bash
-git clone https://github.com/lukasreese/powerbi-claude-skills.git
-cp -r powerbi-claude-skills/pbir-report-builder ~/.claude/skills/
-```
+**Easiest way** — download the `.skill` file and add it to Claude:
 
-Or download the ZIP from GitHub and copy the `pbir-report-builder/` folder to `~/.claude/skills/`.
+1. Download [`pbir-report-builder.skill`](./pbir-report-builder.skill) (click → download icon)
+2. In Claude Desktop or Cowork: Settings → Skills → Add Skill
+3. Select the downloaded file — done!
 
-> **Important:** Copy the entire folder — `SKILL.md` and `references/` must stay together.
+> **For developers:** You can also clone the repo and copy the `pbir-report-builder/` folder to `~/.claude/skills/`.
 
 ### Step 2: Prepare your Power BI project
 
@@ -142,6 +141,4 @@ This skill focuses entirely on the **report and visual layer** — pages, visual
 
 ## Uninstall
 
-```bash
-rm -rf ~/.claude/skills/pbir-report-builder
-```
+In Claude Desktop or Cowork: Settings → Skills → remove the skill. If you installed manually, delete the `~/.claude/skills/pbir-report-builder` folder.

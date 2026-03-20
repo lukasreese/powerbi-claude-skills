@@ -11,23 +11,17 @@ A collection of [Claude Code](https://claude.ai/code) skills that let Claude bui
 
 ## Quick Install
 
-```bash
-# Clone this repo
-git clone https://github.com/lukasreese/powerbi-claude-skills.git
+Each skill folder contains a ready-to-use `.skill` file — just download it and add it to Claude:
 
-# Copy the skill you want to your Claude Code skills directory
-cp -r powerbi-claude-skills/pbir-report-builder ~/.claude/skills/
-```
+1. Go to the skill folder (e.g., [`pbir-report-builder/`](./pbir-report-builder/))
+2. Click the `.skill` file → **Download raw file** (download icon)
+3. Add it to Claude Desktop or Cowork via Settings → Skills
 
-Or for project-specific use:
+No cloning, no terminal — just download one file and you're ready to go.
 
-```bash
-cp -r powerbi-claude-skills/pbir-report-builder ./.claude/skills/
-```
+> **For developers:** You can also clone the repo and copy the skill folder to `~/.claude/skills/` if you prefer working with the raw files.
 
-> **Important:** Copy the entire skill folder — the `SKILL.md` and `references/` directory work together.
-
-See each skill's own README for detailed setup and usage instructions.
+See each skill's own README for detailed usage instructions.
 
 ## What Are Claude Code Skills?
 
