@@ -73,7 +73,7 @@ All reference material is bundled inside this skill at `references/`:
 - `references/json-schemas/` — local copies of all PBIR schemas for offline validation
 
 **IBCS Visuals (integrated):**
-- `references/ibcs-visuals/SKILL.md` — full IBCS workflow, template selection guide, generation steps
+- `references/ibcs-visuals/IBCS-SKILL.md` — full IBCS workflow, template selection guide, generation steps
 - `references/ibcs-visuals/references/ibcs-colors.md` — IBCS color palette (actual, comparison, positive, negative)
 - `references/ibcs-visuals/references/ibcs-dax-measures.md` — 15 DAX measure templates for column variance
 - `references/ibcs-visuals/references/ibcs-svg-measures.md` — SVG measure templates for table visuals
@@ -82,7 +82,7 @@ All reference material is bundled inside this skill at `references/`:
 - `references/ibcs-visuals/references/ibcs-table-simple.md` — pivot table with SVG variance bars
 - `references/ibcs-visuals/references/ibcs-table-full.md` — full SVG table (AC, PY bars + variance)
 
-For IBCS visuals, read `references/ibcs-visuals/SKILL.md` for the full workflow and template selection guide.
+For IBCS visuals, read `references/ibcs-visuals/IBCS-SKILL.md` for the full workflow and template selection guide.
 
 Read the relevant template file when building a visual type you haven't used recently.
 
@@ -559,4 +559,4 @@ This skill includes full support for **IBCS (International Business Communicatio
 - Actual: `#0C3549` (dark blue) | Comparison: `#CCCCCC` (gray)
 - Positive variance: `#44C088` (green) | Negative variance: `#ED7373` (red)
 
-For full IBCS workflow details, template selection, and generation steps, read: `references/ibcs-visuals/SKILL.md`
+For full IBCS workflow details, template selection, and generation steps, read: `references/ibcs-visuals/IBCS-SKILL.md`
