@@ -65,6 +65,7 @@ RETURN
 5. **Always use `nativeQueryRef`** in projections, never `"active": true`
 6. **Metadata selectors use `"TABLE.MEASURE"`** format — no `extension.` prefix
 7. **Include `dataViewWildcard`** in selectors that set dynamic values
+8. **Always add detail measures to `ReferenceLabels` query bucket** — not just formatting objects. Without the query bucket, the measure works visually but won't appear in the Power BI Desktop UI's Detail data well (user can't toggle/swap it)
 
 ---
 
@@ -111,6 +112,20 @@ Replace `<<TABLE>>`, `<<MAIN>>`, `<<PY>>`, `<<YOY_DISPLAY>>`, `<<BG_COLOR>>`, `<
               },
               "queryRef": "<<TABLE>>.<<MAIN>>",
               "nativeQueryRef": "<<MAIN>>"
+            }
+          ]
+        },
+        "ReferenceLabels": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                  "Property": "<<YOY_DISPLAY>>"
+                }
+              },
+              "queryRef": "<<TABLE>>.<<YOY_DISPLAY>>",
+              "nativeQueryRef": "<<YOY_DISPLAY>>"
             }
           ]
         }
