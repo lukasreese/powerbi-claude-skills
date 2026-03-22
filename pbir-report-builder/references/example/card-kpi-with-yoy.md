@@ -7,7 +7,7 @@ A `cardVisual` that shows:
 2. **Reference row** — prior year value with a custom label ("vs. PY:")
 3. **Conditional badge** — YoY% with a green/red background driven by DAX measures
 
-This pattern was reverse-engineered from a production Talking Rain report (Assortment Analytics v2, "Total Portfolio Revenue" card on Portfolio Health Brand page, visual folder `de11e25966317e0c37f1`).
+This pattern was reverse-engineered from a production client report's KPI card with conditional YoY comparison badge.
 
 ---
 
@@ -300,7 +300,7 @@ Replace `<<TABLE>>`, `<<MAIN>>`, `<<PY>>`, `<<VAR_PCT>>`, `<<BG_COLOR>>`, `<<FON
 The `metadata` value in selectors uses `"TABLE.MEASURE"` format (NO `extension.` prefix):
 
 - `"!Measure.Sum Gross Sales"` (test project)
-- `"_Measures.Dollar Sales"` (Talking Rain)
+- `"_Measures.Dollar Sales"` (example with _Measures table)
 
 The `<<FIELD_ID>>` can be any unique string (e.g. `"field-gs-ref-001"`). It must be consistent across `referenceLabel`, `referenceLabelDetail`, `referenceLabelTitle`, and `referenceLabelValue`.
 
