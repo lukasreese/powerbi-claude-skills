@@ -178,6 +178,7 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
 
 ```json
 {
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "v_kpi_card",
   "position": { "x": 30, "y": 100, "z": 1000, "width": 300, "height": 160, "tabOrder": 1 },
   "visual": {
