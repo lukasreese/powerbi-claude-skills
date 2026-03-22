@@ -71,6 +71,7 @@ All reference material is bundled inside this skill at `references/`:
 
 **Complete examples (start here for new users):**
 - `references/examples/kpi-dashboard-example.md` — full working example: 4 KPI cards + bar chart + line chart, complete Node.js script, DAX measures, layout grid
+- `references/examples/card-kpi-with-yoy.md` — **KPI card with conditional YoY badge** — `cardVisual` with prior-year reference row, custom label ("vs. PY:"), and green/red % badge driven by DAX color measures. Includes full `referenceLabelDetail` conditional formatting pattern, required DAX measures, complete JSON template with placeholders, and community contribution guide.
 
 **JSON schemas (Microsoft originals):**
 - `references/json-schemas/` — local copies of all PBIR schemas for offline validation
