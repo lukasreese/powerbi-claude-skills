@@ -18,6 +18,19 @@ This skill analyzes Power BI Project (PBIP) files to create a complete dependenc
 - User asks about dependencies between objects
 - User wants a model quality audit
 
+## References (Self-Contained)
+
+All reference material is bundled inside this skill at `references/`:
+
+- `references/tmdl-syntax.md` — TMDL file format: keywords, indentation rules, property syntax, file structure
+- `references/dax-parsing-patterns.md` — Regex patterns for extracting all DAX reference types (measures, columns, tables, functions) + edge cases
+- `references/classification-flowchart.md` — Step-by-step decision tree for assigning status codes (V/F/CF/D/R/M/BROKEN/CIRC/O-CHAIN/O)
+- `references/sample-tmdl-table.md` — Annotated examples of real TMDL table files (imported, calculated, measures-only, calculation group)
+- `references/sample-tmdl-relationships.md` — Relationship TMDL examples (active, inactive, M2M, bidirectional) with parsing patterns
+- `references/visual-field-extraction.md` — All JSON paths where measure/column references appear in visual.json, page.json, report.json
+
+Read the relevant reference file before parsing each file type. These references ensure consistent, accurate parsing across invocations.
+
 ## Analysis Workflow
 
 When triggered, follow these steps in order:
