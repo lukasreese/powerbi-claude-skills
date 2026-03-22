@@ -5,7 +5,7 @@ description: Create IBCS-compliant variance charts and tables using native Power
 # IBCS Visuals Skill
 
 Create IBCS (International Business Communication Standards) variance visualizations using native Power BI visuals.
-All output is **PBIR file-based** — writes TMDL measures + visual.json files.
+All output is **PBIR file-based** — writes TMDL measures + visual.json files. No MCP server required.
 
 ## When to Use
 
@@ -156,7 +156,7 @@ https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visua
 
 ## Important Notes
 
-- **PBIR-first**: All measures are written to TMDL files, all visuals as visual.json files.
+- **PBIR-first**: All measures are written to TMDL files, all visuals as visual.json files. No MCP server dependency.
 - **NativeVisualCalculation** (Template 2) embeds DAX directly in visual.json — fewer semantic model measures needed
 - **SVG measures** (Templates 3 & 4) require `dataCategory: ImageUrl` to render as images in pivot tables
 - **Locale handling**: SVG measures use `SUBSTITUTE(FORMAT(...), ",", ".")` to ensure dot decimals in SVG attributes

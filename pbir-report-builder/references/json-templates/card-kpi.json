@@ -1,7 +1,7 @@
 {
   "_comment": "KPI Card — New card visual with CY value, PY reference, YoY%, conditional color",
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
-  "name": "v01Kpi",
+  "name": "v01KpiTotalSales",
   "position": {
     "x": 30,
     "y": 80,
@@ -23,10 +23,10 @@
                     "Measure": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "MEASURES_TABLE"
+                          "Entity": "_Measures"
                         }
                       },
-                      "Property": "KPI_COLOR_MEASURE"
+                      "Property": "KPI Color"
                     }
                   }
                 }
@@ -71,14 +71,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_VALUE"
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
-              "nativeQueryRef": "MEASURE_VALUE"
+              "queryRef": "_Measures.Total Sales",
+              "nativeQueryRef": "Total Sales"
             }
           ]
         },
@@ -89,14 +89,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_COMPARISON"
+                  "Property": "Total Sales PY"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_COMPARISON",
-              "nativeQueryRef": "MEASURE_COMPARISON"
+              "queryRef": "_Measures.Total Sales PY",
+              "nativeQueryRef": "Total Sales PY"
             }
           ]
         },
@@ -107,14 +107,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_CHANGE"
+                  "Property": "YoY Sales %"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_CHANGE",
-              "nativeQueryRef": "MEASURE_CHANGE"
+              "queryRef": "_Measures.YoY Sales %",
+              "nativeQueryRef": "YoY Sales %"
             }
           ]
         }

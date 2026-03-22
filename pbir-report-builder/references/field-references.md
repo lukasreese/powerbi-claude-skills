@@ -27,13 +27,13 @@ Use when binding a column from a table (for axes, categories, slicers):
   "field": {
     "Column": {
       "Expression": {
-        "SourceRef": { "Entity": "TABLE_NAME" }
+        "SourceRef": { "Entity": "DimProduct" }
       },
-      "Property": "COLUMN_NAME"
+      "Property": "Category"
     }
   },
-  "queryRef": "TABLE_NAME.COLUMN_NAME",
-  "nativeQueryRef": "COLUMN_NAME"
+  "queryRef": "DimProduct.Category",
+  "nativeQueryRef": "Category"
 }
 ```
 
@@ -56,19 +56,19 @@ Use when binding a DAX measure (for values, KPIs, totals):
 }
 ```
 
-**Example** — a measure in a card:
+**Example** — Total Sales measure in a card:
 ```json
 {
   "field": {
     "Measure": {
       "Expression": {
-        "SourceRef": { "Entity": "MEASURES_TABLE" }
+        "SourceRef": { "Entity": "_Measures" }
       },
-      "Property": "MEASURE_VALUE"
+      "Property": "Total Sales"
     }
   },
-  "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
-  "nativeQueryRef": "MEASURE_VALUE"
+  "queryRef": "_Measures.Total Sales",
+  "nativeQueryRef": "Total Sales"
 }
 ```
 
@@ -118,9 +118,9 @@ Use a measure to dynamically set a visual property (like color):
       "expr": {
         "Measure": {
           "Expression": {
-            "SourceRef": { "Entity": "MEASURES_TABLE" }
+            "SourceRef": { "Entity": "_Measures" }
           },
-          "Property": "KPI_COLOR_MEASURE"
+          "Property": "KPI Color"
         }
       }
     }
@@ -153,7 +153,7 @@ For static values in formatting objects:
 
 ## Complete Query Example
 
-A clustered column chart with a category axis and two measures (CY vs PY):
+A clustered column chart with Category axis and two measures (CY vs PY):
 
 ```json
 "query": {
@@ -163,12 +163,12 @@ A clustered column chart with a category axis and two measures (CY vs PY):
         {
           "field": {
             "Column": {
-              "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } },
-              "Property": "COLUMN_NAME"
+              "Expression": { "SourceRef": { "Entity": "DimProduct" } },
+              "Property": "Category"
             }
           },
-          "queryRef": "TABLE_NAME.COLUMN_NAME",
-          "nativeQueryRef": "COLUMN_NAME"
+          "queryRef": "DimProduct.Category",
+          "nativeQueryRef": "Category"
         }
       ]
     },
@@ -177,22 +177,22 @@ A clustered column chart with a category axis and two measures (CY vs PY):
         {
           "field": {
             "Measure": {
-              "Expression": { "SourceRef": { "Entity": "MEASURES_TABLE" } },
-              "Property": "MEASURE_VALUE"
+              "Expression": { "SourceRef": { "Entity": "_Measures" } },
+              "Property": "Total Sales"
             }
           },
-          "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
-          "nativeQueryRef": "MEASURE_VALUE"
+          "queryRef": "_Measures.Total Sales",
+          "nativeQueryRef": "Total Sales"
         },
         {
           "field": {
             "Measure": {
-              "Expression": { "SourceRef": { "Entity": "MEASURES_TABLE" } },
-              "Property": "MEASURE_COMPARISON"
+              "Expression": { "SourceRef": { "Entity": "_Measures" } },
+              "Property": "Total Sales PY"
             }
           },
-          "queryRef": "MEASURES_TABLE.MEASURE_COMPARISON",
-          "nativeQueryRef": "MEASURE_COMPARISON"
+          "queryRef": "_Measures.Total Sales PY",
+          "nativeQueryRef": "Total Sales PY"
         }
       ]
     }

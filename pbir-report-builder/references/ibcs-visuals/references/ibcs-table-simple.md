@@ -13,7 +13,7 @@ A native pivot table with 3 value columns:
 
 ## Required Measures
 
-Create these measures in Power BI Desktop:
+Create via MCP `measure_operations`:
 1. `SVG Style` — shared SVG CSS helper
 2. `Delta SVG` — from `ibcs-svg-measures.md` template
 3. `Delta% SVG` — from `ibcs-svg-measures.md` template

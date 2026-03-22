@@ -1,7 +1,7 @@
 {
   "_comment": "Table — Multiple columns as separate projections in Values role",
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
-  "name": "v06Table",
+  "name": "v06TableDetail",
   "position": {
     "x": 30,
     "y": 250,
@@ -21,56 +21,56 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "TABLE_NAME"
+                      "Entity": "DimProduct"
                     }
                   },
-                  "Property": "COLUMN_NAME"
+                  "Property": "Product Name"
                 }
               },
-              "queryRef": "TABLE_NAME.COLUMN_NAME",
-              "nativeQueryRef": "COLUMN_NAME"
+              "queryRef": "DimProduct.Product Name",
+              "nativeQueryRef": "Product Name"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_VALUE"
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
-              "nativeQueryRef": "MEASURE_VALUE"
+              "queryRef": "_Measures.Total Sales",
+              "nativeQueryRef": "Total Sales"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_VALUE_2"
+                  "Property": "Total Units"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_VALUE_2",
-              "nativeQueryRef": "MEASURE_VALUE_2"
+              "queryRef": "_Measures.Total Units",
+              "nativeQueryRef": "Total Units"
             },
             {
               "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_CHANGE"
+                  "Property": "YoY Sales %"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_CHANGE",
-              "nativeQueryRef": "MEASURE_CHANGE"
+              "queryRef": "_Measures.YoY Sales %",
+              "nativeQueryRef": "YoY Sales %"
             }
           ]
         }

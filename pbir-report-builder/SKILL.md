@@ -1,6 +1,6 @@
 ---
-name: pbir-report-builder
-description: "Power BI PBIR Report Builder with IBCS Visuals. Generates Power BI report pages, visuals, and IBCS-compliant variance charts by writing PBIR JSON files directly into PBIP project folders. Use this skill EVERY TIME the user asks to: create a Power BI report page, add visuals to a report, generate KPI cards, create charts or tables in Power BI, build a dashboard layout with visuals, create IBCS variance charts, create actual vs plan visuals, or programmatically create Power BI visuals. Also trigger when the user mentions 'PBIR', 'IBCS', 'variance chart', 'variance table', 'actual vs plan', 'actual vs comparison', 'create visuals', 'add a page', 'build a report', 'KPI cards', 'place visuals', or wants to generate Power BI report content through code. If the user mentions any combination of Power BI + visuals/page/report/KPI/chart/table/IBCS/variance + create/build/generate/add, use this skill."
+name: pbi-report-builder
+description: "[power-bi] Power BI PBIR Report Builder with IBCS Visuals. Generates Power BI report pages, visuals, and IBCS-compliant variance charts by writing PBIR JSON files directly into PBIP project folders. Use this skill EVERY TIME the user asks to: create a Power BI report page, add visuals to a report, generate KPI cards, create charts or tables in Power BI, build a dashboard layout with visuals, create IBCS variance charts, create actual vs plan visuals, or programmatically create Power BI visuals. Also trigger when the user mentions 'PBIR', 'IBCS', 'variance chart', 'variance table', 'actual vs plan', 'actual vs comparison', 'create visuals', 'add a page', 'build a report', 'KPI cards', 'place visuals', or wants to generate Power BI report content through code. If the user mentions any combination of Power BI + visuals/page/report/KPI/chart/table/IBCS/variance + create/build/generate/add, use this skill."
 ---
 
 # PBIR Report Builder
@@ -13,7 +13,7 @@ Add pages and visuals to existing Power BI PBIP projects by writing PBIR (Enhanc
 
 **The correct workflow:**
 1. **User creates a blank PBIP** — open Power BI Desktop, connect to the data source, save as PBIP format. This generates all boilerplate correctly.
-2. **User creates measures and columns** — build your semantic model in Power BI Desktop as usual.
+2. **Semantic model measures** — use `powerbi-modeling-mcp` if Desktop is running, OR write directly to TMDL files if Desktop is closed (see "Adding Measures When Desktop Is Closed" below).
 3. **This skill adds pages and visuals** — write PBIR JSON files into the existing `.Report/definition/` folder to create report pages with visuals.
 
 **Why not from scratch?** The `report.json` file contains Desktop-version-specific theme references (e.g., `CY26SU02` with nested version objects), resource packages, 6+ report settings, and the `.platform` files need real UUIDs. These change between Desktop versions and cannot be reliably generated.
@@ -38,8 +38,8 @@ ProjectName.SemanticModel/
   definition.pbism                         ← Desktop creates (NOT definition.tmdl!)
   definition/
     database.tmdl                          ← Desktop creates (compatibilityLevel: 1600)
-    model.tmdl                             ← Desktop creates
-    tables/*.tmdl                          ← Desktop creates
+    model.tmdl                             ← Desktop creates or MCP server manages
+    tables/*.tmdl                          ← MCP server manages
 ```
 
 **Key learning:** The semantic model entry point is `definition.pbism` (a JSON file), NOT `definition.tmdl`. TMDL files go inside the `definition/` subfolder.
@@ -69,11 +69,14 @@ All reference material is bundled inside this skill at `references/`:
 - `references/json-templates/page-drillthrough.json` — drillthrough page
 - `references/json-templates/report-settings.json` — report-level settings
 
+**Complete examples (start here for new users):**
+- `references/examples/kpi-dashboard-example.md` — full working example: 4 KPI cards + bar chart + line chart, complete Node.js script, DAX measures, layout grid
+
 **JSON schemas (Microsoft originals):**
 - `references/json-schemas/` — local copies of all PBIR schemas for offline validation
 
 **IBCS Visuals (integrated):**
-- `references/ibcs-visuals/IBCS-SKILL.md` — full IBCS workflow, template selection guide, generation steps
+- `references/ibcs-visuals/IBCS-REFERENCE.md` — full IBCS workflow, template selection guide, generation steps
 - `references/ibcs-visuals/references/ibcs-colors.md` — IBCS color palette (actual, comparison, positive, negative)
 - `references/ibcs-visuals/references/ibcs-dax-measures.md` — 15 DAX measure templates for column variance
 - `references/ibcs-visuals/references/ibcs-svg-measures.md` — SVG measure templates for table visuals
@@ -82,7 +85,7 @@ All reference material is bundled inside this skill at `references/`:
 - `references/ibcs-visuals/references/ibcs-table-simple.md` — pivot table with SVG variance bars
 - `references/ibcs-visuals/references/ibcs-table-full.md` — full SVG table (AC, PY bars + variance)
 
-For IBCS visuals, read `references/ibcs-visuals/IBCS-SKILL.md` for the full workflow and template selection guide.
+For IBCS visuals, read `references/ibcs-visuals/IBCS-REFERENCE.md` for the full workflow and template selection guide.
 
 Read the relevant template file when building a visual type you haven't used recently.
 
@@ -93,7 +96,7 @@ Read the relevant template file when building a visual type you haven't used rec
 Before using this skill, verify:
 1. **A PBIP project already exists** — user must have saved a `.pbip` from Power BI Desktop
 2. **The semantic model is connected** — the `.SemanticModel/` folder has data tables with columns
-3. **Measures exist** — created in Power BI Desktop
+3. **Measures exist or can be created** — either already in the model, creatable via MCP, or writable to TMDL
 4. **Power BI Desktop is CLOSED** — files cannot be written while Desktop has the project open
 
 If the user doesn't have a PBIP yet, instruct them to:
@@ -112,7 +115,7 @@ Ask the user:
 5. **Measures and columns** — table.field references for each visual (case-sensitive, must match model exactly)
 6. **Layout** — natural language ("4 KPIs at top, bar chart left, line chart right") or pixel positions
 
-If the user has a background SVG, use those exact grid positions.
+If the user has a background SVG from the Background Designer skill, use those exact grid positions.
 
 ### Step 2: Generate the PBIR Files
 
@@ -157,6 +160,8 @@ Tell the user:
 }
 ```
 
+**Schema version detection:** Before writing any files, read an existing `visual.json` from the project to discover the schema version Desktop used (e.g., `2.6.0`, `2.7.0`). Use that same version for all new files. The template above shows `2.0.0` as a baseline — always override with the detected version.
+
 Canvas sizes:
 - Standard: `1280` x `720`
 - Report: `1300` x `900`
@@ -183,7 +188,7 @@ Read existing `pages.json`, add the new page name to `pageOrder`:
 ```json
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
-  "name": "v01Kpi",
+  "name": "v01KpiTotalSales",
   "position": {
     "x": 30,
     "y": 80,
@@ -222,15 +227,15 @@ Read existing `pages.json`, add the new page name to `pageOrder`:
 This is the most common visual. Shows a main value, a comparison reference, and a change percentage with conditional coloring.
 
 **Query roles:**
-- `Data` — main KPI value (e.g., current year measure)
-- `ReferenceLabels` — comparison value (e.g., prior year measure)
-- `AdditionalMeasure` — change metric (e.g., year-over-year % measure)
+- `Data` — main KPI value (e.g., Total Sales CY)
+- `ReferenceLabels` — comparison value (e.g., Total Sales PY)
+- `AdditionalMeasure` — change metric (e.g., YoY Sales %)
 
-**Conditional color via measure:** A color measure returns `"#00B050"` (green) or `"#FF0000"` (red) based on performance.
+**Conditional color via measure:** The `KPI Color` measure returns a hex color based on YoY performance. Use the IBCS color palette consistently: `"#44C088"` (green/positive) or `"#ED7373"` (red/negative). Do NOT use `"#00B050"` / `"#FF0000"` — those clash with the IBCS visual standards used elsewhere in the report.
 
 ```json
 {
-  "name": "v01Kpi",
+  "name": "v01KpiTotalSales",
   "position": { "x": 30, "y": 80, "z": 1000, "width": 280, "height": 150, "tabOrder": 0 },
   "visual": {
     "visualType": "cardVisual",
@@ -243,7 +248,7 @@ This is the most common visual. Shows a main value, a comparison reference, and 
                 "expr": {
                   "Measure": {
                     "Expression": { "SourceRef": { "Entity": "MEASURES_TABLE" } },
-                    "Property": "KPI_COLOR_MEASURE"
+                    "Property": "KPI Color"
                   }
                 }
               }
@@ -325,8 +330,8 @@ Visual types: `clusteredColumnChart`, `clusteredBarChart`, `columnChart` (stacke
   "query": {
     "queryState": {
       "Category": { "projections": [{
-        "field": { "Column": { "Expression": { "SourceRef": { "Entity": "TABLE_NAME" } }, "Property": "COLUMN_NAME" } },
-        "queryRef": "TABLE_NAME.COLUMN_NAME", "nativeQueryRef": "COLUMN_NAME"
+        "field": { "Column": { "Expression": { "SourceRef": { "Entity": "DimDate" } }, "Property": "Month" } },
+        "queryRef": "DimDate.Month", "nativeQueryRef": "Month"
       }]},
       "Y": { "projections": [{
         "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "MEASURES_TABLE" } }, "Property": "MEASURE" } },
@@ -469,66 +474,179 @@ Visual types: `donutChart`, `pieChart`
 
 ### Writing Files
 
-Use Node.js (.mjs) scripts to write files. This avoids the EEXIST error that the Write tool encounters on paths with spaces.
+Use Node.js (.mjs) scripts to write files. This avoids the EEXIST error that the Write tool encounters on paths with spaces. The script handles schema detection, page numbering, file writing, and validation in one pass.
 
 ```javascript
-import { writeFileSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const projectBase = 'PATH_TO_PBIP_PROJECT';
 const reportDef = join(projectBase, 'ProjectName.Report', 'definition');
 
-// 1. Create page folder
-const pageDir = join(reportDef, 'pages', 'pg01Overview');
+// --- STEP 0: Detect schema version from existing visuals ---
+// Read any existing visual.json to get the schema version Desktop uses.
+// Fall back to 2.0.0 only if no visuals exist at all.
+function detectSchemaVersion(pagesDir) {
+  const defaultSchema = 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json';
+  try {
+    const pages = readdirSync(pagesDir).filter(d => d.startsWith('pg'));
+    for (const pg of pages) {
+      const visDir = join(pagesDir, pg, 'visuals');
+      if (!existsSync(visDir)) continue;
+      const visuals = readdirSync(visDir);
+      for (const v of visuals) {
+        const f = join(visDir, v, 'visual.json');
+        if (existsSync(f)) {
+          const j = JSON.parse(readFileSync(f, 'utf8'));
+          if (j['$schema']) return j['$schema'];
+        }
+      }
+    }
+  } catch (e) { /* ignore */ }
+  return defaultSchema;
+}
+
+// --- STEP 0b: Auto-increment page number ---
+// Scan existing pages to find the next available pg## number.
+function nextPageNumber(pagesDir) {
+  const pages = readdirSync(pagesDir).filter(d => d.startsWith('pg'));
+  const nums = pages.map(p => parseInt(p.replace(/^pg(\d+).*/, '$1'))).filter(n => !isNaN(n));
+  return nums.length > 0 ? Math.max(...nums) + 1 : 1;
+}
+
+const SCHEMA = detectSchemaVersion(join(reportDef, 'pages'));
+const NEXT_NUM = nextPageNumber(join(reportDef, 'pages'));
+const PAGE_NAME = `pg${String(NEXT_NUM).padStart(2, '0')}Overview`;
+
+// --- STEP 1: Create page folder ---
+const pageDir = join(reportDef, 'pages', PAGE_NAME);
 const visualsDir = join(pageDir, 'visuals');
 mkdirSync(visualsDir, { recursive: true });
 
-// 2. Write page.json
+// --- STEP 2: Write page.json ---
 writeFileSync(join(pageDir, 'page.json'), JSON.stringify(pageJson, null, 2), 'utf8');
 
-// 3. Create visual folders and write visual.json files
+// --- STEP 3: Create visual folders and write visual.json files ---
+// Every visual.json gets the detected $schema version.
 for (const visual of visuals) {
+  visual['$schema'] = SCHEMA;
   const vDir = join(visualsDir, visual.name);
   mkdirSync(vDir, { recursive: true });
   writeFileSync(join(vDir, 'visual.json'), JSON.stringify(visual, null, 2), 'utf8');
 }
 
-// 4. Update pages.json
+// --- STEP 4: Update pages.json ---
 const pagesJsonPath = join(reportDef, 'pages', 'pages.json');
 const pagesJson = JSON.parse(readFileSync(pagesJsonPath, 'utf8'));
-if (!pagesJson.pageOrder.includes('pg01Overview')) {
-  pagesJson.pageOrder.push('pg01Overview');
+if (!pagesJson.pageOrder.includes(PAGE_NAME)) {
+  pagesJson.pageOrder.push(PAGE_NAME);
 }
 writeFileSync(pagesJsonPath, JSON.stringify(pagesJson, null, 2), 'utf8');
+
+// --- STEP 5: Validate all generated JSON files ---
+// Parse every file we just wrote to catch malformed JSON before Desktop sees it.
+let allValid = true;
+function validateDir(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) validateDir(join(dir, entry.name));
+    else if (entry.name.endsWith('.json')) {
+      try {
+        JSON.parse(readFileSync(join(dir, entry.name), 'utf8'));
+        console.log('OK:', entry.name);
+      } catch (e) {
+        console.error('INVALID JSON:', join(dir, entry.name), e.message);
+        allValid = false;
+      }
+    }
+  }
+}
+validateDir(pageDir);
+console.log(allValid ? '\n✓ All JSON valid!' : '\n✗ Fix invalid files before opening in Desktop!');
 ```
 
-Save the script as `.mjs` (not `.js`) in the `07-PowerBI/` folder and run with `node script.mjs`.
+Save the script as `.mjs` (not `.js`) and run with `node script.mjs`. The script auto-detects the schema version, picks the next page number, and validates all output.
 
 ### Important Caveats
 
 1. **Power BI Desktop must be closed** before writing files, then reopen the `.pbip` file
-2. **Invalid JSON causes blocking errors** — always validate structure before writing
-3. **Entity and Property names are case-sensitive** — must match semantic model exactly
+2. **Invalid JSON causes blocking errors** — always run the validation step (Step 5 in the template) after writing files. A single missing comma or bracket will prevent Desktop from loading the page.
+3. **Entity and Property names are case-sensitive** — must match semantic model exactly. Read the TMDL files to confirm exact names before referencing them in visuals.
 4. **The name field must match the folder name** — for both pages and visuals
 5. **Max 50 characters** for page/visual names
 6. **Always include $schema** — Power BI Desktop validates against these schemas
 7. **NEVER create a PBIP from scratch** — always work with an existing Desktop-saved project
 8. **Semantic model entry point is `definition.pbism`** (JSON), NOT `definition.tmdl` — TMDL files go in `definition/` subfolder
 9. **`.platform` files need real UUIDs** — only Desktop generates these correctly
-10. **Schema versions matter** — use v2.0.0 for visualContainer/page, v1.3.0+ for report (check existing `report.json` for the version Desktop used)
+10. **Detect schema version from existing visuals** — never hardcode a version. Read an existing `visual.json` to discover what version Desktop uses (e.g., `2.6.0`, `2.7.0`). The version changes with Desktop updates and mismatches cause errors.
 11. **Read existing `report.json` first** — match its schema version and theme name when adding pages
+12. **Auto-increment page numbers** — scan existing `pages/` folder for the highest `pg##` number and use the next one. Never assume a fixed number.
+13. **Use IBCS colors consistently** — green `#44C088`, red `#ED7373`, actual `#0C3549`, comparison `#CCCCCC`. Do not mix in other green/red shades (like `#00B050`/`#FF0000`) as it creates visual inconsistency.
+14. **MCP fallback** — if `powerbi-modeling-mcp` is not connected (Desktop closed), write measures directly to TMDL files. Check for existence first to avoid duplicates.
 
 ---
 
-## Workflow
+## Adding Measures When Desktop Is Closed
 
-This skill handles the **report and visual layer** of a Power BI project. The semantic model (tables, columns, measures, relationships) is managed in Power BI Desktop as usual.
+When `powerbi-modeling-mcp` is unavailable (Desktop not running or MCP not connected), write measures directly to the TMDL files. This is the preferred approach when building a complete report from scratch with Desktop closed.
 
-Typical workflow:
-1. User opens PBIP in Desktop, connects data, creates measures
+**How to append measures to an existing TMDL file:**
+
+1. Read the existing `.tmdl` file (e.g., `definition/tables/!Measure.tmdl`)
+2. Check if each measure already exists (`tmdl.includes("measure 'MeasureName'")`)
+3. Append new measure blocks before the first `column` definition
+4. Each measure block uses tab indentation and follows TMDL syntax:
+
+```
+\tmeasure 'Measure Name' =
+\t\t\t
+\t\t\tDAX_EXPRESSION_HERE
+\t\tformatString: #,##0.00 €
+\t\tdisplayFolder: FolderName
+\t\tlineageTag: <uuid>
+```
+
+**Key rules for TMDL measure writing:**
+- Use `crypto.randomUUID()` (Node.js) for lineageTag values
+- Expression goes on the line after `=`, indented with 3 tabs
+- Multi-line DAX: use triple backticks (` ``` `) after `=` and close with ` ``` ` on a new line
+- `formatString`, `displayFolder`, `lineageTag` are indented with 2 tabs
+- Insert new measures BEFORE the first `\tcolumn ` line (measures must come before columns in TMDL)
+- Always check if a measure already exists before adding to avoid duplicates
+
+**KPI Color measures** should use the IBCS color palette:
+```dax
+// Positive = green (#44C088), Negative = red (#ED7373)
+IF([Variance Measure] >= 0, "#44C088", "#ED7373")
+// For cost measures where lower is better, invert the logic:
+IF([Cost Variance] <= 0, "#44C088", "#ED7373")
+```
+
+---
+
+## Two-Layer Architecture
+
+This skill works as part of a two-layer approach for Power BI development:
+
+| Layer | Tool | What it handles |
+|-------|------|----------------|
+| **Semantic Model** | `powerbi-modeling-mcp` (MCP server) | Tables, columns, measures, relationships, partitions, roles |
+| **Report / Visuals** | This skill (PBIR JSON) | Pages, visuals, layout, formatting, filters |
+
+**The MCP server connects to a running Power BI Desktop instance** and can create/modify the data model live. This skill writes JSON files to disk that Desktop reads on next open.
+
+**Workflow A — MCP available (Desktop running):**
+1. MCP server creates measures/columns as needed
 2. User closes Desktop
-3. This skill writes page/visual JSON files into the project folder
+3. This skill writes page/visual JSON files
 4. User reopens Desktop to see new pages
+
+**Workflow B — MCP unavailable (Desktop closed, which is common):**
+1. Read existing TMDL files to discover table/measure names
+2. Append any missing measures directly to the TMDL file
+3. This skill writes page/visual JSON files
+4. User opens Desktop — everything loads together
+
+Workflow B is actually the most common scenario because Power BI Desktop must be closed for us to write files. Try MCP first; if it fails with "no connection", fall back to direct TMDL writing without asking the user.
 
 ---
 
@@ -559,4 +677,19 @@ This skill includes full support for **IBCS (International Business Communicatio
 - Actual: `#0C3549` (dark blue) | Comparison: `#CCCCCC` (gray)
 - Positive variance: `#44C088` (green) | Negative variance: `#ED7373` (red)
 
-For full IBCS workflow details, template selection, and generation steps, read: `references/ibcs-visuals/IBCS-SKILL.md`
+For full IBCS workflow details, template selection, and generation steps, read: `references/ibcs-visuals/IBCS-REFERENCE.md`
+
+---
+
+## Context Sources
+
+Before creating any deliverable, check these references:
+- **Consultant Profile:** `00 - Business Profile/brand-identity/CONSULTANT-PROFILE.md` — Who Lukas is, his expertise, clients, services, voice & tone
+- **Brand Identity:** Load the `brd-brand-identity` skill for colors, fonts, and design guidelines
+
+## Related Skills
+
+- **pbi-dependency-analyzer** — Analyze model dependencies before building visuals. Understand what measures exist and which tables connect
+- **pro-background-designer-svg** — Create matching background SVGs for report pages
+- **brd-brand-identity** — Follow brand colors and fonts for visual consistency
+- **ops-learning-log** — Check `power-bi.md` learnings for PBIR patterns and conventions

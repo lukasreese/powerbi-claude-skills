@@ -1,7 +1,7 @@
 {
   "_comment": "Line Chart — Trend over time",
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
-  "name": "v04Line",
+  "name": "v04LineTrend",
   "position": {
     "x": 650,
     "y": 250,
@@ -21,14 +21,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "TABLE_NAME"
+                      "Entity": "DimDate"
                     }
                   },
-                  "Property": "COLUMN_NAME"
+                  "Property": "Month"
                 }
               },
-              "queryRef": "TABLE_NAME.COLUMN_NAME",
-              "nativeQueryRef": "COLUMN_NAME"
+              "queryRef": "DimDate.Month",
+              "nativeQueryRef": "Month"
             }
           ]
         },
@@ -39,14 +39,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "MEASURES_TABLE"
+                      "Entity": "_Measures"
                     }
                   },
-                  "Property": "MEASURE_VALUE"
+                  "Property": "Total Sales"
                 }
               },
-              "queryRef": "MEASURES_TABLE.MEASURE_VALUE",
-              "nativeQueryRef": "MEASURE_VALUE"
+              "queryRef": "_Measures.Total Sales",
+              "nativeQueryRef": "Total Sales"
             }
           ]
         }

@@ -118,8 +118,8 @@ These go inside the `visual` object, alongside `visualType` and `query`:
           "color": {
             "expr": {
               "Measure": {
-                "Expression": { "SourceRef": { "Entity": "MEASURES_TABLE" } },
-                "Property": "KPI_COLOR_MEASURE"
+                "Expression": { "SourceRef": { "Entity": "_Measures" } },
+                "Property": "KPI Color"
               }
             }
           }

@@ -1,72 +1,88 @@
-# IBCS Resources for Power BI
-# International Business Communication Standards — reference links and implementation approaches
+# IBCS — What It Is & How This Skill Implements It
+
+---
 
 ## What is IBCS?
-IBCS (International Business Communication Standards) defines rules for designing business reports,
-presentations, and dashboards. Key principles: simplify, unify, condense, check, express, explain, structure.
 
-## Implementation Approaches in Power BI
+IBCS (International Business Communication Standards) is a set of rules for designing business reports and dashboards that communicate data clearly and consistently. The standards focus on removing visual noise, establishing uniform notation, and ensuring every chart tells its story without ambiguity.
 
-### 1. DAX UDF SVG (Recommended — Free, Native)
-**Repository:** https://github.com/avatorl/dax-udf-svg-ibcs
-**DAX Lib Package:** https://daxlib.org/package/PowerofBI.IBCS/
-**Documentation:** https://www.powerofbi.org/ibcs
-**Author:** Andrzej Leszkiewicz (IBCS Certified Analyst)
+The 7 IBCS principles follow the acronym **SUCCESS**:
 
-How it works:
-- User-defined DAX functions generate SVG images
-- SVGs embed into native Power BI visuals (Table, Matrix, Card, Image, Button, Slicer)
-- No custom visual installation required
-- Install via DAX Lib platform (TMDL-based, compatible with PBIP workflow)
+| Principle | Meaning |
+|-----------|---------|
+| **S**ay | Convey a clear message — every chart answers a question |
+| **U**nify | Use consistent notation across all reports |
+| **C**ondense | Show more in less space — maximize data density |
+| **C**heck | Verify content for accuracy and completeness |
+| **E**xpress | Choose the right chart type for the data story |
+| **S**implify | Remove all decoration that doesn't carry information |
+| **S**tructure | Organize content logically for the reader |
 
-Chart types supported:
-- Bar/column charts with IBCS formatting (AC vs PY/BU, variance)
-- Variance charts (absolute and relative)
-- Small multiples
-- Three-tier charts
-- P&L-compatible visualizations
+---
 
-### 2. Deneb + Vega (Flexible, Custom)
-**Templates:** https://github.com/avatorl/Deneb-Vega-Templates
-**Showcase:** https://github.com/PBI-David/Deneb-Showcase
-**Help:** https://github.com/avatorl/Deneb-Vega-Help
+## IBCS Notation Used in This Skill
 
-How it works:
-- Deneb is a free Power BI custom visual that renders Vega/Vega-Lite specs
-- Write Vega JSON specifications for complete visual control
-- Templates organized by FT Visual Vocabulary categories:
-  - change-over-time, correlation, deviation, distribution
-  - flow, magnitude, part-to-whole, ranking, spatial
+### Color Encoding
 
-### 3. Commercial Custom Visuals
-- **Zebra BI** (IBCS-certified): Tables and Charts visuals
-  https://www.ibcs.com/software/zebra-bi-for-power-bi/
-- **Inforiver** (xViz): IBCS-compliant visuals with advanced formatting
-  https://inforiver.com/ibcs-reports-powerbi/
-- **TrueChart**: IBCS-compliant column, line, area charts
+IBCS specifies strict color meanings. This skill uses these exact values:
 
-## Recommended Approach for PBIR Skill
+| Role | Color | Hex |
+|------|-------|-----|
+| **Actual (AC)** — current period values | Dark blue | `#0C3549` |
+| **Previous Year (PY)** — comparison period | Light gray | `#CCCCCC` |
+| **Positive variance** — actual better than comparison | Green | `#44C088` |
+| **Negative variance** — actual worse than comparison | Red | `#ED7373` |
 
-The DAX UDF SVG approach (option 1) is the best fit because:
-1. Uses native Power BI visuals — no custom visual JSON needed in PBIR
-2. Install functions via DAX Lib to the semantic model
-3. PBIR just needs standard visual containers (Image, Table, Matrix) bound to the UDF measures
-4. Works with PBIP/Git workflow
+> **Rule:** Never substitute other greens or reds (`#00B050`, `#FF0000`, etc.). The IBCS palette is fixed throughout the skill for visual consistency.
 
-For Deneb (option 2), the PBIR visual.json would use:
-- visualType: "deneb" (custom visual)
-- The Vega spec goes into the visual objects as a string property
-- Requires Deneb custom visual to be available in the report
+### Chart Titles
 
-## Integration with PBIR Report Builder
+IBCS requires structured titles:
+- **Measure** | **Entity** | **Time** — e.g., "Net Sales | All Regions | Jan–Dec 2025 vs 2024"
+- AC = Actual, PY = Previous Year, BU = Budget, FC = Forecast
+- Always label comparison period on the chart
 
-To add IBCS visuals via PBIR JSON:
-1. Ensure DAX Lib IBCS package is installed in the semantic model
-2. Create measures that call the IBCS UDF functions (e.g., IBCS.BarChart())
-3. Add an "image" visual in PBIR JSON bound to the SVG-producing measure
-4. The image visual renders the SVG automatically
+---
 
-Standard image visual for SVG measures:
-- visualType: "image"
-- query binds to the SVG-producing measure
-- No special formatting needed — the SVG carries its own styling
+## The 4 IBCS Templates in This Skill
+
+This skill builds IBCS-compliant visuals entirely from **native Power BI visuals** — no paid add-ons, no custom visuals, no third-party dependencies.
+
+Each template is self-contained: you provide 3 inputs (actual measure, comparison measure, category/time column) and the skill generates all helper DAX measures + the PBIR JSON.
+
+| # | Template | Visual Type | Description |
+|---|----------|-------------|-------------|
+| **1** | Column Variance Chart | `lineClusteredColumnComboChart` | Time-series comparison (AC vs PY by month/quarter). Columns = actual, line = comparison, bars = variance delta. Best for showing performance over time. |
+| **2** | Bar Variance Chart | `barChart` with NativeVisualCalculation | Ranked category comparison (AC vs PY by product, region, etc.). Horizontal bars = actual, comparison markers = PY. Best for ranking many categories. |
+| **3** | Variance Table (Simple) | `pivotTable` | Table with numeric actual values + SVG variance bars in a column. Clean, information-dense. Best for detailed breakdowns where precision matters. |
+| **4** | Variance Table (Full) | `pivotTable` | Full SVG table — both AC and PY shown as proportional bars + variance column. Highest information density. Best for executive summaries. |
+
+> For full generation instructions and DAX measure templates, see:
+> - `ibcs-visuals/IBCS-REFERENCE.md` — workflow, template selection guide, generation steps
+> - `ibcs-visuals/references/ibcs-dax-measures.md` — all 15 DAX measure templates
+> - `ibcs-visuals/references/ibcs-svg-measures.md` — SVG measures for table visuals
+
+---
+
+## When to Use Which Template
+
+```
+Is the primary dimension TIME (months, quarters)?
+  → YES → Use Template 1: Column Variance Chart
+  → NO  → Are you comparing CATEGORIES (products, regions, customers)?
+             → YES → Template 2: Bar Variance Chart (5+ categories)
+                      Template 3: Variance Table Simple (detailed breakdown)
+                      Template 4: Variance Table Full (executive summary)
+```
+
+**Rule of thumb:**
+- Time series → column chart
+- Rankings → bar chart
+- Detailed numbers → simple table
+- Executive 1-pager → full table
+
+---
+
+## Visual Gallery
+
+See `visual-gallery/ibcs-visuals.md` for screenshots of all 4 templates as they appear in Power BI Desktop.
