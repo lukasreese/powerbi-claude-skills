@@ -13,7 +13,7 @@ This pattern was sourced from a real production report (Talking Rain Assortment 
 
 ## Required DAX Measures
 
-You need 4 measures (substitute your own names):
+You need 5 measures (substitute your own names):
 
 | Role | Measure Name | Example DAX |
 |------|-------------|-------------|
@@ -25,39 +25,50 @@ You need 4 measures (substitute your own names):
 
 ---
 
+## Critical PBIR Rules (from trial and error)
+
+1. **Always include `$schema`** as the first property in visual.json
+2. **Never use `vcObjects`** — it's not in the schema. Use `visualContainerObjects` instead
+3. **Never use `filterConfig`** — it's not in the schema for visuals
+4. **Never add `"Schema": "extension"` in SourceRef** — use only `"Entity": "TABLE_NAME"`
+5. **Always use `nativeQueryRef`** in projections, never `"active": true`
+6. **Metadata selectors use `"TABLE.MEASURE"`** format — no `extension.` prefix
+7. **Include `dataViewWildcard`** in selectors that set dynamic values
+
+---
+
 ## Key JSON Objects
 
-### 1. Query State — bind main + reference measures
+### 1. Query State — only the main measure in Data bucket
+
+The PY value is set via `referenceLabel` objects, NOT via a `ReferenceLabels` query bucket.
 
 ```json
 "query": {
   "queryState": {
     "Data": {
-      "projections": [{
-        "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "Sum Gross Sales" } },
-        "queryRef": "!Measure.Sum Gross Sales",
-        "active": true
-      }]
-    },
-    "ReferenceLabels": {
-      "projections": [{
-        "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "Sum Gross Sales PY" } },
-        "queryRef": "!Measure.Sum Gross Sales PY",
-        "active": true
-      }]
+      "projections": [
+        {
+          "field": {
+            "Measure": {
+              "Expression": { "SourceRef": { "Entity": "!Measure" } },
+              "Property": "Sum Gross Sales"
+            }
+          },
+          "queryRef": "!Measure.Sum Gross Sales",
+          "nativeQueryRef": "Sum Gross Sales"
+        }
+      ]
     }
   }
 }
 ```
 
-> **Buckets**: `Data` = main value. `ReferenceLabels` = the comparison row.
-> `AdditionalMeasure` = optional extra badge (not used here).
-
 ---
 
 ### 2. `referenceLabel` — controls the reference row display
 
-Two selectors are required:
+Two selectors required — one for default styling, one to bind the PY measure:
 
 ```json
 "referenceLabel": [
@@ -71,19 +82,23 @@ Two selectors are required:
   {
     "properties": {
       "value": {
-        "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "Sum Gross Sales PY" } }
+        "expr": {
+          "Measure": {
+            "Expression": { "SourceRef": { "Entity": "!Measure" } },
+            "Property": "Sum Gross Sales PY"
+          }
+        }
       }
     },
     "selector": {
-      "metadata": "extension.!Measure.Sum Gross Sales",
+      "data": [{ "dataViewWildcard": { "matchingOption": 0 } }],
+      "metadata": "!Measure.Sum Gross Sales",
       "id": "field-gs-ref-001",
       "order": 0
     }
   }
 ]
 ```
-
-> **Note**: The `selector.metadata` value mirrors the main measure's queryRef but with the schema prefix (e.g. `extension.!Measure.Sum Gross Sales`). The `id` field (e.g. `field-gs-ref-001`) is a stable identifier you assign — it links `referenceLabel`, `referenceLabelTitle`, and `referenceLabelDetail` together. The `order: 0` marks it as the first (and usually only) reference label.
 
 ---
 
@@ -97,7 +112,7 @@ Two selectors are required:
       "titleText": { "expr": { "Literal": { "Value": "'vs. PY:'" } } }
     },
     "selector": {
-      "metadata": "extension.!Measure.Sum Gross Sales",
+      "metadata": "!Measure.Sum Gross Sales",
       "id": "field-gs-ref-001"
     }
   }
@@ -119,31 +134,47 @@ This is the heart of the pattern. Two selectors required:
       "show": { "expr": { "Literal": { "Value": "true" } } }
     },
     "selector": {
-      "metadata": "extension.!Measure.Sum Gross Sales"
+      "metadata": "!Measure.Sum Gross Sales"
     }
   },
   {
     "properties": {
       "detailValue": {
-        "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "Sum Gross Sales Var %" } }
+        "expr": {
+          "Measure": {
+            "Expression": { "SourceRef": { "Entity": "!Measure" } },
+            "Property": "Sum Gross Sales Var %"
+          }
+        }
       },
       "detailBackgroundColor": {
         "solid": {
           "color": {
-            "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "KPI Color Gross Sales" } }
+            "expr": {
+              "Measure": {
+                "Expression": { "SourceRef": { "Entity": "!Measure" } },
+                "Property": "KPI Color Gross Sales"
+              }
+            }
           }
         }
       },
       "detailFontColor": {
         "solid": {
           "color": {
-            "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "!Measure" } }, "Property": "KPI Font Color Gross Sales" } }
+            "expr": {
+              "Measure": {
+                "Expression": { "SourceRef": { "Entity": "!Measure" } },
+                "Property": "KPI Font Color Gross Sales"
+              }
+            }
           }
         }
       }
     },
     "selector": {
-      "metadata": "extension.!Measure.Sum Gross Sales",
+      "data": [{ "dataViewWildcard": { "matchingOption": 0 } }],
+      "metadata": "!Measure.Sum Gross Sales",
       "id": "field-gs-ref-001"
     }
   }
@@ -187,16 +218,14 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
       "queryState": {
         "Data": {
           "projections": [{
-            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<MAIN_MEASURE>>" } },
+            "field": {
+              "Measure": {
+                "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                "Property": "<<MAIN_MEASURE>>"
+              }
+            },
             "queryRef": "<<TABLE>>.<<MAIN_MEASURE>>",
-            "active": true
-          }]
-        },
-        "ReferenceLabels": {
-          "projections": [{
-            "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<PY_MEASURE>>" } },
-            "queryRef": "<<TABLE>>.<<PY_MEASURE>>",
-            "active": true
+            "nativeQueryRef": "<<MAIN_MEASURE>>"
           }]
         }
       }
@@ -213,11 +242,17 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
         {
           "properties": {
             "value": {
-              "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<PY_MEASURE>>" } }
+              "expr": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                  "Property": "<<PY_MEASURE>>"
+                }
+              }
             }
           },
           "selector": {
-            "metadata": "extension.<<TABLE>>.<<MAIN_MEASURE>>",
+            "data": [{ "dataViewWildcard": { "matchingOption": 0 } }],
+            "metadata": "<<TABLE>>.<<MAIN_MEASURE>>",
             "id": "<<FIELD_ID>>",
             "order": 0
           }
@@ -230,7 +265,7 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
             "titleText": { "expr": { "Literal": { "Value": "'<<LABEL_TEXT>>'" } } }
           },
           "selector": {
-            "metadata": "extension.<<TABLE>>.<<MAIN_MEASURE>>",
+            "metadata": "<<TABLE>>.<<MAIN_MEASURE>>",
             "id": "<<FIELD_ID>>"
           }
         }
@@ -241,29 +276,60 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
             "show": { "expr": { "Literal": { "Value": "true" } } }
           },
           "selector": {
-            "metadata": "extension.<<TABLE>>.<<MAIN_MEASURE>>"
+            "metadata": "<<TABLE>>.<<MAIN_MEASURE>>"
           }
         },
         {
           "properties": {
             "detailValue": {
-              "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<VAR_PCT_MEASURE>>" } }
+              "expr": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                  "Property": "<<VAR_PCT_MEASURE>>"
+                }
+              }
             },
             "detailBackgroundColor": {
-              "solid": { "color": { "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<BG_COLOR_MEASURE>>" } } } }
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                      "Property": "<<BG_COLOR_MEASURE>>"
+                    }
+                  }
+                }
+              }
             },
             "detailFontColor": {
-              "solid": { "color": { "expr": { "Measure": { "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } }, "Property": "<<FONT_COLOR_MEASURE>>" } } } }
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
+                      "Property": "<<FONT_COLOR_MEASURE>>"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
-            "metadata": "extension.<<TABLE>>.<<MAIN_MEASURE>>",
+            "data": [{ "dataViewWildcard": { "matchingOption": 0 } }],
+            "metadata": "<<TABLE>>.<<MAIN_MEASURE>>",
             "id": "<<FIELD_ID>>"
           }
         }
       ],
       "value": [
-        { "properties": { "labelPrecision": { "expr": { "Literal": { "Value": "1L" } } } } }
+        {
+          "properties": {
+            "labelPrecision": { "expr": { "Literal": { "Value": "1L" } } }
+          },
+          "selector": {
+            "metadata": "<<TABLE>>.<<MAIN_MEASURE>>"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -277,29 +343,25 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": { "filters": [] }
+  }
 }
-```
-
-> **Note on background/border styling**: Do NOT add a `vcObjects` property inside `visual` — it is not defined in the PBIR schema and will cause a load error. Visual container background and border can be set via `visualContainerObjects` if needed, or left to Power BI Desktop defaults.
 ```
 
 ---
 
 ## Selector Metadata Format
 
-The `metadata` value in selectors must follow this exact format:
+The `metadata` value in selectors must follow this exact format (NO `extension.` prefix):
 
 ```
-"extension.<<TABLE>>.<<MEASURE_NAME>>"
+"<<TABLE>>.<<MEASURE_NAME>>"
 ```
 
 Examples:
-- `"extension.!Measure.Sum Gross Sales"`
-- `"extension._Measures.Product Dollar Sales"` (Talking Rain pattern)
+- `"!Measure.Sum Gross Sales"`
+- `"_Measures.Product Dollar Sales"` (Talking Rain pattern)
 
-If Power BI Desktop modifies your JSON, it may rewrite the `id` values. The field ID (`<<FIELD_ID>>`) can be any unique string — e.g. `"field-gs-ref-001"` — as long as it's consistent across `referenceLabel`, `referenceLabelTitle`, and `referenceLabelDetail`.
+The field ID (`<<FIELD_ID>>`) can be any unique string — e.g. `"field-gs-ref-001"` — as long as it's consistent across `referenceLabel`, `referenceLabelTitle`, and `referenceLabelDetail`.
 
 ---
 
