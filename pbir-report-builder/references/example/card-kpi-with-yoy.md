@@ -282,6 +282,9 @@ Replace `<<MAIN_MEASURE>>`, `<<PY_MEASURE>>`, `<<VAR_PCT_MEASURE>>`, `<<BG_COLOR
 }
 ```
 
+> **Note on background/border styling**: Do NOT add a `vcObjects` property inside `visual` — it is not defined in the PBIR schema and will cause a load error. Visual container background and border can be set via `visualContainerObjects` if needed, or left to Power BI Desktop defaults.
+```
+
 ---
 
 ## Selector Metadata Format
