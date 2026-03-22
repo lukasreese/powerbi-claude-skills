@@ -13,13 +13,46 @@ This pattern was reverse-engineered from a production client report's KPI card w
 
 ## Required DAX Measures
 
+You need 6 measures. The color scheme uses **dark text on a light background** (not white text on saturated backgrounds).
+
 | Role | Measure Name | Example DAX |
 |------|-------------|-------------|
-| Main value | `Sum Gross Sales` | `SUM(Fact_Sales[Gross_Sales])` |
-| Prior year value | `Sum Gross Sales PY` | `CALCULATE([Sum Gross Sales], SAMEPERIODLASTYEAR(Dim_Date[Date]))` |
-| YoY variance % | `Sum Gross Sales Var %` | `DIVIDE([Sum Gross Sales] - [Sum Gross Sales PY], [Sum Gross Sales PY])` |
-| Badge background color | `KPI Color Gross Sales` | `IF([Sum Gross Sales Var %] >= 0, "#44C088", "#ED7373")` |
-| Badge font color | `KPI Font Color Gross Sales` | `"#FFFFFF"` (white on both green and red) |
+| Main value | `[Main Measure]` | `SUM(Fact_Sales[Gross_Sales])` |
+| Prior year value | `[Main Measure YA]` | `SUM(Fact_Sales[Gross_Sales_Year_Ago])` or `CALCULATE([Main], SAMEPERIODLASTYEAR(...))` |
+| Raw variance % | `[Main Measure Var %]` | `DIVIDE([Main] - [Main YA], [Main YA], 0)` |
+| **Badge display value** | `[Main Measure YoY]` | See below — formatted string with arrow |
+| **Badge font color** | `[Main Measure YoY Font]` | Conditional: dark green `#2E7D32` or dark red `#C62828` |
+| **Badge background color** | `[Main Measure YoY BG]` | Conditional: light green `#E8F5E9` or light red `#FFEBEE` |
+
+### Badge Display Measure (with arrow indicator)
+
+```dax
+[Main Measure YoY] =
+VAR YoY = DIVIDE([Main] - [Main YA], [Main YA], 0)
+VAR Arrow = IF(YoY >= 0, " ↗", " ↘")
+RETURN
+    IF(ISBLANK(YoY), BLANK(), FORMAT(YoY, "+0.0%;-0.0%") & Arrow)
+```
+
+### Conditional Font Color (dark text)
+
+```dax
+[Main Measure YoY Font] =
+VAR YoY = DIVIDE([Main] - [Main YA], [Main YA], 0)
+RETURN
+    IF(ISBLANK(YoY), BLANK(), IF(YoY >= 0, "#2E7D32", "#C62828"))
+```
+
+### Conditional Background Color (light tint)
+
+```dax
+[Main Measure YoY BG] =
+VAR YoY = DIVIDE([Main] - [Main YA], [Main YA], 0)
+RETURN
+    IF(ISBLANK(YoY), BLANK(), IF(YoY >= 0, "#E8F5E9", "#FFEBEE"))
+```
+
+> **Design principle:** Dark text on light background is more readable and professional than white text on saturated backgrounds. The light tints (`#E8F5E9` / `#FFEBEE`) provide subtle context without overwhelming the card.
 
 ---
 
@@ -56,13 +89,13 @@ These objects remove the default card clutter. Without them, you get visible out
 
 ## Complete Visual JSON Template
 
-Replace `<<TABLE>>`, `<<MAIN>>`, `<<PY>>`, `<<VAR_PCT>>`, `<<BG_COLOR>>`, `<<FONT_COLOR>>`, `<<TITLE>>`, `<<LABEL>>`, and `<<FIELD_ID>>` with your values.
+Replace `<<TABLE>>`, `<<MAIN>>`, `<<PY>>`, `<<YOY_DISPLAY>>`, `<<BG_COLOR>>`, `<<FONT_COLOR>>`, `<<TITLE>>`, `<<LABEL>>`, and `<<FIELD_ID>>` with your values.
 
 ```json
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "v_kpi_card",
-  "position": { "x": 30, "y": 80, "z": 1000, "height": 150, "width": 280, "tabOrder": 0 },
+  "position": { "x": 30, "y": 80, "z": 1000, "height": 120, "width": 283, "tabOrder": 0 },
   "visual": {
     "visualType": "cardVisual",
     "query": {
@@ -199,7 +232,7 @@ Replace `<<TABLE>>`, `<<MAIN>>`, `<<PY>>`, `<<VAR_PCT>>`, `<<BG_COLOR>>`, `<<FON
               "expr": {
                 "Measure": {
                   "Expression": { "SourceRef": { "Entity": "<<TABLE>>" } },
-                  "Property": "<<VAR_PCT>>"
+                  "Property": "<<YOY_DISPLAY>>"
                 }
               }
             },
