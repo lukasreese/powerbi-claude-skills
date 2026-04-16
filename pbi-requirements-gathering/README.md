@@ -13,6 +13,8 @@ Built by a senior Power BI consultant. Based on real project failures.
 
 A structured, conversation-driven requirements gathering assistant for Power BI projects. Claude asks the right questions — one at a time — across 10 phases, flags risks as they surface, and produces a portable requirements document your whole team can use.
 
+For a small to mid-size project, the full conversation takes between **half an hour and two hours**, depending on how quickly you can confirm answers. Large enterprise projects take longer.
+
 ---
 
 ## 10 Phases
