@@ -6,6 +6,7 @@ A collection of [Claude Code](https://claude.ai/code) skills that let Claude bui
 
 | Skill | Description | Status |
 |-------|-------------|--------|
+| [**pbi-requirements-gathering**](./pbi-requirements-gathering/) | Structured 10-phase requirements conversation — surfaces risks, flags bad assumptions, produces a portable client-ready document | Available |
 | [**pbir-report-builder**](./pbir-report-builder/) | Generate report pages, visuals, and IBCS variance charts by writing PBIR JSON directly into PBIP projects | Available |
 | [**pbip-dependency-analyzer**](./pbip-dependency-analyzer/) | Find unused measures, run impact analysis, and audit semantic model quality | Coming soon |
 
