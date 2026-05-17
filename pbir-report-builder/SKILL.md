@@ -1,11 +1,21 @@
 ---
-name: pbi-report-builder
-description: "[power-bi] Power BI PBIR Report Builder with IBCS Visuals. Generates Power BI report pages, visuals, and IBCS-compliant variance charts by writing PBIR JSON files directly into PBIP project folders. Use this skill EVERY TIME the user asks to: create a Power BI report page, add visuals to a report, generate KPI cards, create charts or tables in Power BI, build a dashboard layout with visuals, create IBCS variance charts, create actual vs plan visuals, or programmatically create Power BI visuals. Also trigger when the user mentions 'PBIR', 'IBCS', 'variance chart', 'variance table', 'actual vs plan', 'actual vs comparison', 'create visuals', 'add a page', 'build a report', 'KPI cards', 'place visuals', or wants to generate Power BI report content through code. If the user mentions any combination of Power BI + visuals/page/report/KPI/chart/table/IBCS/variance + create/build/generate/add, use this skill."
+name: pbir-report-builder
+description: "Generate Power BI report pages and visuals (KPI cards, bar/line/combo charts, tables, IBCS variance charts) by writing PBIR JSON into an existing PBIP project. Use when the user wants to create or add Power BI report pages, visuals, KPI cards, IBCS variance charts, or programmatically build report content. Requires a Power BI Desktop-saved PBIP; does not create projects from scratch."
 ---
 
 # PBIR Report Builder
 
 Add pages and visuals to existing Power BI PBIP projects by writing PBIR (Enhanced Report Format) JSON files directly into the project folder structure.
+
+## Critical Rules (read first)
+
+1. **Desktop must be closed** before writing any files — reopen the `.pbip` after writing.
+2. **Never create a PBIP from scratch** — always work with an existing Desktop-saved project.
+3. **Detect schema version from existing visuals** — read an existing `visual.json` to find the version Desktop used; never hardcode it.
+4. **Entity and Property names are case-sensitive** — read the TMDL files to confirm exact names.
+5. **`name` field must match the folder name** — for both pages and visuals.
+6. **Semantic model entry point is `definition.pbism`** (JSON file), not `definition.tmdl` — TMDL files live in the `definition/` subfolder.
+7. **Validate all generated JSON before handing off** — a single bad comma silently prevents Desktop from loading the page.
 
 ## Critical: Hybrid Approach (Do NOT Create PBIP From Scratch)
 
@@ -115,8 +125,6 @@ Ask the user:
 4. **Visuals needed** — what charts/cards/tables, and what data they show
 5. **Measures and columns** — table.field references for each visual (case-sensitive, must match model exactly)
 6. **Layout** — natural language ("4 KPIs at top, bar chart left, line chart right") or pixel positions
-
-If the user has a background SVG from the Background Designer skill, use those exact grid positions.
 
 ### Step 2: Generate the PBIR Files
 
@@ -682,15 +690,6 @@ For full IBCS workflow details, template selection, and generation steps, read: 
 
 ---
 
-## Context Sources
-
-Before creating any deliverable, check these references:
-- **Consultant Profile:** `00 - Business Profile/brand-identity/CONSULTANT-PROFILE.md` — Who Lukas is, his expertise, clients, services, voice & tone
-- **Brand Identity:** Load the `brd-brand-identity` skill for colors, fonts, and design guidelines
-
 ## Related Skills
 
 - **pbi-dependency-analyzer** — Analyze model dependencies before building visuals. Understand what measures exist and which tables connect
-- **pro-background-designer-svg** — Create matching background SVGs for report pages
-- **brd-brand-identity** — Follow brand colors and fonts for visual consistency
-- **ops-learning-log** — Check `power-bi.md` learnings for PBIR patterns and conventions
